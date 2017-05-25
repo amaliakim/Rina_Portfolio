@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.IBoardFileDao">
+	
+	<resultMap type="boardFile" id="boardFileMap">
+		<id column="f_id" property="f_id" />
+		<result column="origin_file_name" property="originFileName"/>
+		<result column="size" property="size"/>
+		<result column="uri" property="uri"/>
+	</resultMap>
+	
+	<insert id="insertBoardFile" parameterType="boardFile" 
+	useGeneratedKeys="true" keyProperty="f_id">
+		insert into board_file
+		values(0, #{originFileName}, #{size}, #{uri})
+	</insert>
+	
+	<update id="updateBoardFile" parameterType="boardFile">
+		update board_file set
+		origin_file_name=#{originFileName}, 
+		size=#{size}, 
+		uri=#{uri} 
+		where f_id=#{f_id}
+	</update>
+	
+	<delete id="deleteBoardFile" parameterType="int">
+		delete from board_file where f_id=#{f_id}
+	</delete>
+	
+	<select id="selectOne" parameterType="int" resultMap="boardFileMap">
+		select * from board_file where f_id=#{f_id}
+	</select>
+	
+	<select id="selectAll" resultMap="boardFileMap">
+		select * from board_file
+	</select>
+	
+</mapper>

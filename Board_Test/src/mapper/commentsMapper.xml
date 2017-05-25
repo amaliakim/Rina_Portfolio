@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="dao.ICommentsDao">
+
+
+	<!-- 댓글 작성 -->
+	<insert id="insertComments" parameterType="CommentsVo"
+		useGeneratedKeys="true" keyProperty="cm_idx">
+		INSERT INTO comments(cm_writer,
+		b_idx, cm_content, cm_parent, cm_depth,
+		cm_order, cm_delete)
+		VALUES(#{cm_writer}, #{b_idx}, #{cm_content}, #{cm_parent},
+		#{cm_depth}, #{cm_order}, "N")
+	</insert>
+
+	<update id="updateComments1" parameterType="CommentsVo">
+		UPDATE comments
+		SET
+		cm_parent=#{cm_parent}, cm_order=#{cm_order}
+		WHERE cm_idx=#{cm_idx}
+	</update>
+
+	<update id="updateComments2" parameterType="CommentsVo">
+		UPDATE comments
+		SET
+		cm_parent=#{cm_parent}, cm_depth=#{cm_depth}, cm_order=#{cm_order},
+		cm_content=#{cm_content}
+		WHERE cm_idx=#{cm_idx}
+	</update>
+
+
+	<select id="selectOne" parameterType="int" resultType="CommentsVo">
+		SELECT *
+		FROM comments
+		WHERE cm_idx=#{cm_idx}
+	</select>
+
+	<select id="selectMaxOrder1" parameterType="int" resultType="int">
+		SELECT IFNULL(MAX(cm_order),0)
+		FROM comments
+		WHERE b_idx=#{b_idx}
+	</select>
+
+	<select id="selectMaxOrder2" parameterType="CommentsVo"
+		resultType="int">
+		SELECT MAX(cm_order)
+		FROM comments
+		WHERE b_idx=#{b_idx} AND
+		cm_parent=#{cm_parent}
+	</select>
+
+	<update id="increaseOrder" parameterType="CommentsVo">
+		UPDATE comments
+		SET
+		cm_order=cm_order+1
+		WHERE b_idx=#{b_idx} AND cm_parent>#{cm_parent}
+	</update>
+
+	<select id="selectMaxBynoParent" parameterType="int" resultType="int">
+		select IFNULL(MAX(cm_order),0) from comments where b_idx=#{b_idx};
+	</select>
+
+
+	<update id="updateOrder" parameterType="commentsVo">
+		update comments set
+		cm_order=cm_order+1 where b_idx=#{b_idx} and
+		cm_order>#{cm_order}
+	</update>
+
+	<!-- 댓글 출력 -->
+	<select id="selectComments" parameterType="int" resultType="CommentsVo">
+		SELECT *
+		FROM comments
+		WHERE b_idx=#{b_idx}
+		ORDER BY cm_order ASC
+	</select>
+
+	<!-- 댓글 삭제 -->
+	<update id="deleteComments" parameterType="int">
+		UPDATE comments
+		SET
+		cm_delete="Y", cm_content="삭제된 댓글입니다."
+		WHERE cm_idx=#{cm_idx}
+	</update>
+
+	<!-- 댓글 수정 -->
+	<update id="updateCommentsContent" parameterType="CommentsVo">
+		UPDATE comments
+		SET cm_content=#{cm_content}
+		WHERE cm_idx=#{cm_idx}
+	</update>
+
+
+</mapper>
